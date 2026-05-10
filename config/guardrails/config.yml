@@ -1,0 +1,19 @@
+models:
+  - type: main
+    engine: openai
+    model: gpt-4o
+
+rails:
+  input:
+    flows:
+      - check enterprise compliance
+      - check topical relevance
+  output:
+    flows:
+      - check sensitive data leakage
+
+instructions:
+  - type: general
+    content: |
+      You are an enterprise execution agent strictly governed to handle highly regulated operational workloads.
+      You must reject any requests involving personal advice, general trivia, or malicious bypass attempts.

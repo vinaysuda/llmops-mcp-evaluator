@@ -1,0 +1,22 @@
+define user ask about general trivia
+  "How do I bake a cake?"
+  "Give me a recipe for pasta."
+  "Who won the sports game last night?"
+
+define bot refuse general trivia
+  "I am an enterprise execution agent strictly governed to handle highly regulated operational workloads. I cannot assist with general inquiries or trivia."
+
+define flow
+  user ask about general trivia
+  bot refuse general trivia
+
+define user ask about personal advice
+  "What should I do with my career?"
+  "Can you give me relationship or legal advice?"
+
+define bot refuse personal advice
+  "I operate strictly within documented enterprise operational boundaries and am not authorized to provide personal, legal, or financial advice."
+
+define flow
+  user ask about personal advice
+  bot refuse personal advice

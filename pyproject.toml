@@ -1,0 +1,105 @@
+[project]
+name = "llmops-mcp-evaluator"
+version = "0.1.0"
+description = "Enterprise CI/CD validation gate, full-stack tracing, and multi-model MCP evaluator for highly regulated, mission-critical workloads."
+authors = [{ name = "Vinay Kumar Reddy Suda", email = "vinay.suda@outlook.com" }]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    # Core IO & Validation
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.2.0",
+    
+    # Universal Tooling & Protocols
+    "mcp>=1.0.0",
+    
+    # Cognitive Frameworks & Orchestrators
+    "langgraph>=0.2.0",
+    "langchain-core>=0.3.0",
+    "crewai>=0.80.0",
+    "autogen-agentchat>=0.2.0",
+    
+    # Model Providers & Client SDKs
+    "openai>=1.50.0",
+    "anthropic>=0.39.0",
+    "google-generativeai>=0.8.0",
+    
+    # Observability & Full-Stack Tracing
+    "langfuse>=2.53.0",
+    "opentelemetry-api>=1.27.0",
+    "opentelemetry-sdk>=1.27.0",
+    
+    # Guardrails & Evaluation Engines
+    "nemoguardrails>=0.9.0",
+    "deepeval>=1.4.0",
+    
+    # Vector Benchmarking Client Drivers
+    "pgvector>=0.3.0",
+    "psycopg[binary]>=3.1.0",
+    "qdrant-client>=1.11.0",
+    "pinecone-client>=5.0.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.20.2",
+    "pytest>=9.0.3",
+    "python-dotenv>=1.2.2",
+    "ruff>=0.15.12",
+]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra -q --strict-markers"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+pythonpath = ["."]
+
+[tool.ruff]
+# Set the maximum line length to 120 (standard for modern, readable AI architectures)
+line-length = 120
+# Pinned strictly to Python 3.12 to match our runtime environment
+target-version = "py312"
+
+[tool.ruff.lint]
+# Enable Pyflakes (F), pycodestyle (E, W), isort (I), and pyupgrade (UP)
+select = ["E", "F", "W", "I", "UP"]
+ignore = []
+
+# Enforce strict formatting rules
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.mypy]
+python_version = "3.12"
+# The ultimate strictness flags
+strict = true
+explicit_package_bases = true
+disallow_untyped_defs = true
+disallow_any_unimported = false
+no_implicit_optional = true
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+show_error_codes = true
+
+# Ignore missing type stubs for dynamic AI libraries (like CrewAI if they haven't updated yet)
+[[tool.mypy.overrides]]
+module = [
+    "crewai.*",
+    "langchain_openai.*",
+]
+ignore_missing_imports = true
+
+[tool.pyright]
+include = ["src", "tests"]
+executionEnvironments = [
+  { root = "." }
+]

@@ -1,0 +1,40 @@
+# Environments & Virtual Machines
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Security & Credentials
+.env
+*.pem
+*.key
+credentials.json
+
+# Local Datastores & Telemetry Caching
+*.db
+*.sqlite3
+.langfuse/
+.deepeval-cache/
+.nemoguardrails_cache/
+
+# IDE & OS Files
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+
+# Build & Distribution Artifacts
+dist/
+build/
+*.egg-info/
+
+# Linting, Type Checking, & Testing Caching
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.deepeval/
