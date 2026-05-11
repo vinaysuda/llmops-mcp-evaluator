@@ -1,3 +1,4 @@
+
 import pytest
 from deepeval import assert_test  # type: ignore[attr-defined, import-untyped, unused-ignore]
 from deepeval.metrics import FaithfulnessMetric  # type: ignore[attr-defined, import-untyped, unused-ignore]
@@ -5,15 +6,18 @@ from deepeval.test_case import LLMTestCase  # type: ignore[attr-defined, import-
 
 from src.core.config import system_settings
 from src.core.telemetry import active_tracer
-from tests.gemini_judge import GeminiJudge
+
+# Point import to the newly authored Universal Judge
+from tests.universal_judge import UniversalJudge
 
 
 @pytest.fixture
 def faithfulness_metric() -> FaithfulnessMetric:
-    gemini_model = GeminiJudge(model_name="gemini-2.5-flash-lite")
+    # Dynamically boots whichever provider is defined in EVAL_JUDGE_PROVIDER
+    universal_model = UniversalJudge()
     return FaithfulnessMetric(
         threshold=system_settings.min_groundedness_score,
-        model=gemini_model,
+        model=universal_model,
         include_reason=True,
         strict_mode=system_settings.deepeval_strict_mode,
     )
@@ -24,6 +28,9 @@ async def test_mission_critical_telemetry_groundedness(faithfulness_metric: Fait
     with active_tracer.start_as_current_span("deepeval_ci_gate_assertion") as span:
         span.set_attribute("eval.metric", "faithfulness")
         span.set_attribute("eval.threshold", system_settings.min_groundedness_score)
+        # Log exactly which judge execution path processed the assertion
+        if faithfulness_metric.model is not None:
+            span.set_attribute("eval.judge_target", faithfulness_metric.model.get_model_name())
 
         retrieved_context: list[str] = [
             "Resource SYS-CLUSTER-02 reports error_rate_percentage at 5.8% with status CRITICAL as of 2026-05-10T08:05:00Z."
@@ -50,7 +57,6 @@ async def test_mission_critical_telemetry_groundedness(faithfulness_metric: Fait
             span.record_exception(e)
             raise e
         finally:
-            # Deterministically flush keep-alive background connections
-            # Explicitly narrow out None first to satisfy Mypy strict union rules
+            # Deterministically flush keep-alive background connections safely
             if faithfulness_metric.model is not None and hasattr(faithfulness_metric.model, "aclose"):
                 await faithfulness_metric.model.aclose()

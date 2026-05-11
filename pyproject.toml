@@ -9,35 +9,31 @@ dependencies = [
     # Core IO & Validation
     "pydantic>=2.7.0",
     "pydantic-settings>=2.2.0",
-    
     # Universal Tooling & Protocols
     "mcp>=1.0.0",
-    
     # Cognitive Frameworks & Orchestrators
     "langgraph>=0.2.0",
     "langchain-core>=0.3.0",
     "crewai>=0.80.0",
     "autogen-agentchat>=0.2.0",
-    
     # Model Providers & Client SDKs
     "openai>=1.50.0",
     "anthropic>=0.39.0",
     "google-generativeai>=0.8.0",
-    
     # Observability & Full-Stack Tracing
     "langfuse>=2.53.0",
     "opentelemetry-api>=1.27.0",
     "opentelemetry-sdk>=1.27.0",
-    
     # Guardrails & Evaluation Engines
     "nemoguardrails>=0.9.0",
     "deepeval>=1.4.0",
-    
     # Vector Benchmarking Client Drivers
     "pgvector>=0.3.0",
     "psycopg[binary]>=3.1.0",
     "qdrant-client>=1.11.0",
     "pinecone-client>=5.0.0",
+    "langchain-openai>=1.2.1",
+    "langchain-anthropic>=1.4.3",
 ]
 
 [build-system]

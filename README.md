@@ -86,7 +86,6 @@ flowchart TD
     style Orchestration fill:transparent,stroke:#3182CE,stroke-dasharray: 5 5,stroke-width:2px
     style Tools fill:transparent,stroke:#38A169,stroke-dasharray: 5 5,stroke-width:2px
     style CI_CD fill:transparent,stroke:#DD6B20,stroke-dasharray: 5 5,stroke-width:2px
-
 ```
 
 ### 🔀 Architectural Flow Breakdown:
@@ -155,13 +154,12 @@ llmops-mcp-evaluator/
 │       └── reflection.py        # Persistent atomic reflection engine
 └── tests/
     ├── evaluations/             # Automated DeepEval CI/CD Gating
-    │   ├── test_groundedness.py           # Asserts 0% hallucinated telemetry facts
-    │   ├── test_retrieval_scalability.py  # Asserts sub-100ms multi-tenant SLAs
-    │   ├── test_safety_compliance.py      # Asserts prompt injection refusal
-    │   └── test_task_fidelity.py          # Asserts upfront specification adherence
+    │   ├── test_groundedness.py           # Hallucination-free assertions
+    │   ├── test_retrieval_scalability.py  # <100ms SLA assertions
+    │   ├── test_safety_compliance.py      # Injection refusal assertions
+    │   └── test_task_fidelity.py          # Spec adherence assertions
     ├── conftest.py              # Global session hooks & async boundaries
-    └── gemini_judge.py          # Universal Google Gemini evaluation wrapper
-
+    └── universal_judge.py       # Multi-provider dynamic LLM-as-a-judge factory
 ```
 
 ---
@@ -181,7 +179,6 @@ cd llmops-mcp-evaluator
 uv venv --python 3.12
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 uv pip install -e .
-
 ```
 
 ### 2. Environment Setup
@@ -189,18 +186,19 @@ uv pip install -e .
 Create a minimal `.env` file at the root of the project. Thanks to robust Pydantic V2 architecture, the repository supports graceful local fallbacks, allowing you to run the entire pipeline securely using a single model gateway.
 
 ```env
-# Universal Judge Gateway (Gemini-Only Execution Path Supported)
-GEMINI_API_KEY="AIzaSy-your-actual-gemini-key"
+# Universal Multi-Provider Judge Gateway Toggle
+# Supports: "openai" | "gemini" | "azure" | "claude"
+EVAL_JUDGE_PROVIDER="openai"
+OPENAI_API_KEY="sk-proj-your-actual-key-here"
 
 # Targeted Vector DB for SLA Benchmarking
 QDRANT_URL="http://localhost:6333"
 
-# Tracing & Thresholds (System falls back to safe embedded defaults if omitted)
+# Tracing & Thresholds
 OTEL_SERVICE_NAME="llmops-mcp-evaluator"
 OTEL_TRACES_EXPORTER="console"
 DEEPEVAL_STRICT_MODE="true"
 MIN_GROUNDEDNESS_SCORE="0.95"
-
 ```
 
 ### 3. Launching the Air-Gapped MCP Server
@@ -209,7 +207,6 @@ Start the isolated FastMCP tool server in a dedicated background terminal. It li
 
 ```bash
 uv run python -m src.mcp_server.server
-
 ```
 
 ### 4. Code Quality & Static Analysis Verification
@@ -222,7 +219,6 @@ uv run mypy .
 
 # Run strict code formatting and import sorting validations
 uv run ruff check .
-
 ```
 
 ### 5. Execute the Full CI/CD Evaluation Suite
@@ -230,8 +226,7 @@ uv run ruff check .
 Launch the complete regression suite. Watch OpenTelemetry infrastructure spans and DeepEval scoring assertions emit live to your console:
 
 ```bash
-uv run pytest tests/evaluations/ -v -s
-
+uv run pytest tests/evaluations/test_groundedness.py -v -s -p no:cacheprovider
 ```
 
 ---
